@@ -1,5 +1,6 @@
 <template>
   <div><h1>123456789哈哈</h1></div>
+  <div><h1>你猜我是谁</h1></div>
   <div class="mod-config">
     <div id="doctorSearch">
       <label class="agent_crux">
