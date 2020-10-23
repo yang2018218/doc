@@ -1,0 +1,41 @@
+.server_cascader,
+.ageng_xx {
+  top: -6px !important;
+}
+
+.server_cascader .el-cascader-node,
+.ageng_xx .el-cascader-node {
+  height: 28px;
+}
+
+.server_cascader .el-cascader-menu,
+.ageng_xx .el-cascader-menu {
+  height: 1200px !important;
+}
+
+.server_cascader .el-scrollbar__wrap,
+.ageng_xx .el-scrollbar__wrap {
+  height: 100%;
+}
+
+.server_cascader .el-cascader-menu__list,
+.ageng_xx .el-cascader-menu__list {
+  width: 160px;
+}
+
+.server_cascader .el-scrollbar__wrap,
+.ageng_xx .el-scrollbar__wrap {
+  margin-right: 0px;
+}
+
+.server_cascader .el-tag span,
+.ageng_xx .el-tag span {
+  display: none;
+}
+
+.server_cascader .el-cascader__tags,
+.ageng_xx .el-cascader__tags {
+  width: 1px;
+  display: none;
+}
+/*# sourceMappingURL=el_casder.css.map */

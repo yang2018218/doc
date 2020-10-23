@@ -1,0 +1,680 @@
+<template>
+  <div class="mod-config">
+    <div id="doctorSearch">
+      <label class="agent_crux">
+        手机号：
+        <el-input placeholder="手机号" oninput="this.value = this.value.trim()" v-model="searchData.mobile"
+                  style="width:10rem" clearable></el-input>
+      </label>
+      <label class="agent_crux">
+        用户姓名：
+        <el-input placeholder="用户姓名" oninput="this.value = this.value.trim()" v-model="searchData.nickname"
+                  style="width:160px" clearable></el-input>
+      </label>
+      <label class="agent_crux">
+        收货人名字：
+        <el-input placeholder="收货人名字" oninput="this.value = this.value.trim()" v-model="searchData.linkman"
+                  style="width:160px" clearable></el-input>
+      </label>
+      <label class="agent_crux">
+        订单号：
+        <el-input placeholder="订单号" oninput="this.value = this.value.trim()" v-model="searchData.orderNum"
+                  style="width:188px;" clearable></el-input>
+      </label>
+      <label>
+        订单属性：
+        <el-select placeholder="请选择" v-model="dictId" class="doctor" style="width:128px" clearable>
+          <el-option
+            :key="index"
+            :label="item.name"
+            :value="item.id"
+            v-for="(item,index) in enterpriseArr"
+          ></el-option>
+        </el-select>
+      </label>
+      <label class>
+        订单价值：
+        <el-input placeholder v-model="searchData.startPrice" clearable></el-input>
+        <span>-</span>
+        <el-input placeholder v-model="searchData.endPrice" clearable></el-input>
+      </label>
+      <label id="statusIdWidth">
+        订单状态：
+        <el-select placeholder="请选择" multiple v-model="dict" class="doctor" style="width:300px">
+          <el-option
+            v-for="(item,inde) in enterpriseList"
+            :key="inde"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+        </el-select>
+      </label>
+      <label style="width: 500px" id="shArea">
+        收货地区：
+        <el-cascader
+          v-model="areaId"
+          :options="options"
+          :show-all-levels="false"
+          :props="props"
+          @expand-change="expand"
+          clearable @change="areaIdChange" style="width: 200px" class="diqu"></el-cascader>
+      </label>
+      <label>
+        发货方式：
+        <el-select
+          clearable
+          v-model="value"
+          placeholder="请选择"
+        >
+          <el-option
+            v-for="item in optionsFun"
+            :key="item.dataId"
+            :value="item.dataId"
+            :label="item.dictName"
+          ></el-option>
+        </el-select>
+      </label>
+      <label class>
+        付款时间：
+        <el-date-picker
+          end-placeholder="结束日期"
+          value-format="yyyy-MM-dd"
+          range-separator=" - "
+          start-placeholder="开始日期"
+          type="daterange"
+          v-model="qqTime"
+          clearable></el-date-picker>
+      </label>
+
+
+      <label>
+        <el-button type="primary" @click="searchGoods()" style="padding:8px 18px">搜索</el-button>
+      </label>
+    </div>
+    <header class="searchBox ">
+      <label>总金额：<span class="moneyStyle_1">{{allMoney}}</span> </label>
+      <label>代金券金额：<span class="moneyStyle_2">{{voucherMoney}}</span></label>
+      <label>总运费：<span class="moneyStyle_3">{{allfreight}}</span></label>
+      <label style="float: right">
+        <el-button slot="reference" type="warning" class="excel" style="padding: 8px 20px" @click="downloadFile()">
+          下载文件
+        </el-button>
+      </label>
+    </header>
+    <el-table
+      :data="dataList"
+      :v-loading="loading"
+      @selection-change="selectionChangeHandle"
+      border
+      stripe
+      style="width: 100%;"
+      v-loading="dataListLoading"
+    >
+      <el-table-column align="center" header-align="center" label="订单ID" prop="orderNum"></el-table-column>
+      <el-table-column align="center" header-align="center" label="用户姓名" prop="nickname"></el-table-column>
+      <el-table-column align="center" header-align="center" label="订单属性" prop>
+        <template slot-scope="scope">
+          <el-tag size="small" type="danger" v-if="scope.row.orderProperty === 1">自购单</el-tag>
+          <el-tag size="small" type="info" v-if="scope.row.orderProperty === 2">购物单</el-tag>
+          <el-tag size="small" type="success" v-if="scope.row.orderProperty === 3">进货单</el-tag>
+          <el-tag size="small" type="success" v-if="scope.row.orderProperty === 4">视频单</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
+        header-align="center"
+        label="创建时间"
+        prop="createTime"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        header-align="center"
+        label="付款时间"
+        prop="payTime"
+      ></el-table-column>
+      <el-table-column align="center" header-align="center" label="用户电话" prop="mobile"></el-table-column>
+      <el-table-column align="center" header-align="center" label="收货姓名" prop="linkman"></el-table-column>
+      <el-table-column align="center" header-align="center" label="收货电话" prop="shMobile"></el-table-column>
+      <el-table-column align="center" header-align="center" label="收货地区" prop="">
+        <div slot-scope="scope">
+          <span>{{scope.row.province}}{{scope.row.city}}{{scope.row.area}}</span>
+        </div>
+      </el-table-column>
+
+
+      <el-table-column align="center" header-align="center" label="订单价值" prop="price">
+        <div slot-scope="scope">
+          <span>{{scope.row.price+scope.row.voucherMoney}}</span>
+        </div>
+      </el-table-column>
+      <el-table-column align="center" header-align="center" label="快递费用" prop="freight"></el-table-column>
+      <el-table-column align="center" header-align="center" label="代金券金额" prop="voucherMoney"></el-table-column>
+      <el-table-column align="center" header-align="center" label="实付金额" prop="sumPrice"></el-table-column>
+      <el-table-column align="center" header-align="center" label="订单状态" prop="status">
+        <template slot-scope="scope">
+          <el-tag size="small" type="danger" v-if="scope.row.status === 0">待付款</el-tag>
+          <el-tag size="small" type="primary" v-if="scope.row.status === 1">已付款</el-tag>
+          <el-tag size="small" type="warning" v-if="scope.row.status === 2">待收货</el-tag>
+          <el-tag size="small" type="success" v-if="scope.row.status === 3">已完成</el-tag>
+          <el-tag size="small" type="info" v-if="scope.row.status === 4">客服审核</el-tag>
+          <el-tag size="small" v-if="scope.row.status === 5">财务审核</el-tag>
+          <p size="small" type v-if="scope.row.status === 6">退款完成</p>
+          <p size="small" type v-if="scope.row.status === 7">仓库审核</p>
+          <p size="small" type v-if="scope.row.status === 8">财务打款</p>
+          <p size="small" type v-if="scope.row.status === 9">急速退款</p>
+          <el-tag size="small" type="danger" v-if="scope.row.status === 10">已废弃</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" header-align="center" label="发货方式" prop="outboundWay">
+        <template slot-scope="scope">
+          <span size="small" v-if="scope.row.outboundWay == 1">主仓发货</span>
+          <span size="small" v-if="scope.row.outboundWay == 2">代理发货</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" fixed="right" header-align="center" label="操作" width="100">
+        <template slot-scope="scope">
+          <el-button @click="addOrUpdateHandle(scope.row.orderId)" size="small" type="text">详情</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      :current-page="pageIndex"
+      :page-size="pageSize"
+      :page-sizes="[10, 20, 50, 100]"
+      :total="totalPage"
+      @current-change="currentChangeHandle"
+      @size-change="sizeChangeHandle"
+      layout="total, sizes, prev, pager, next, jumper"
+    ></el-pagination>
+    <!-- 弹窗, 详情 -->
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+  </div>
+</template>
+<script>
+  import AddOrUpdate from './indentPages-add'
+  export default {
+    data () {
+      return {
+        options:[],//检索地区
+        areaId: [],//检索地区使用
+        voucherMoney: '0',//代金券金额
+        allfreight: '0',
+        allMoney: '0',
+        excelPath: '',//下载文件路径
+        text: '数据正在处理，请等待...',
+        visibleExcel: false,//按钮
+        isdisabled: false,
+        dataForm: {
+          key: '',
+          time: ''
+        },
+        dictId: '',
+        enterpriseList: [
+          //订单状态
+          {
+            id: '0',
+            name: '待付款'
+          },
+          {
+            id: 1,
+            name: '已付款'
+          },
+          {
+            id: 2,
+            name: '待收货'
+          },
+          {
+            id: 3,
+            name: '已完成'
+          },
+          {
+            id: 4,
+            name: '客服审核'
+          },
+          // {
+          //   id: 5,
+          //   name: "财务审核"
+          // },
+          {
+            id: 6,
+            name: '退款完成'
+          },
+          {
+            id: 7,
+            name: '仓库审核'
+          },
+          {
+            id: 8,
+            name: '财务打款'
+          },
+          {
+            id: 9,
+            name: '急速退款'
+          }
+        ],
+        enterpriseArr: [
+          //订单属性
+          {
+            id: 1,
+            name: '自购单'
+          },
+          {
+            id: 2,
+            name: '购物单'
+          },
+          {
+            id: 3,
+            name: '进货单'
+          },
+          {
+            id: 4,
+            name: '视频单'
+          }
+
+        ],
+        props: {
+          multiple: true,
+          value: 'id',
+          label: 'name',
+          children: 'list',
+          disabled: 'B',
+          checkStrictly: true
+        },
+        dict: [],
+        dataList: [],
+        pageIndex: 1,
+        pageSize: 10,
+        totalPage: 0,
+        dataListLoading: false,
+        dataListSelections: [],
+        addOrUpdateVisible: false,
+        optionsFun: [
+          {
+            dataId: 1,
+            dictName: '主仓'
+          },
+          {
+            dataId: 2,
+            dictName: '代理商'
+          }
+        ],
+        value: '', //选中的快递公司
+        searchData: {},
+        qqTime: [],
+        loading: true
+      }
+    },
+    components: {
+      AddOrUpdate
+    },
+    activated () {
+      this.getDataList()
+      this.getSumPrice()
+      this.getCitys()
+
+    },
+    created () {
+      //获取物流公司
+      this.$http({
+        url: this.$http.adornUrl('/ycyl/ycyldictdata/list'),
+        method: 'post',
+        data: {
+          dictValue: 'delivery',
+          pageSize: '30'
+        }
+      }).then(({data}) => {
+        if (data && data.code === 0) {
+        } else {
+          this.$message.error(data.msg)
+        }
+      })
+    },
+    methods: {
+      areaIdChange () {
+      },
+      expand (value) {
+        if (value.length == 1) {
+          this.$http({
+            url: this.$http.adornUrl('/ycyl/ycylprovincecity/getCity'),
+            method: 'post',
+            data: {
+              state: 2,
+              pid: value[0]
+            }
+          }).then(({
+            data
+          }) => {
+            if (data && data.code == 0) {
+              data.list.forEach(item => (item.list = []))
+              this.options.some(item => {
+                if (item.id == value && item.state == 1) {
+                  item.list = data.list
+                  return true
+                }
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        }
+        if (value.length == 2) {
+          this.$http({
+            url: this.$http.adornUrl('/ycyl/ycylprovincecity/getCityForCus'),
+            method: 'post',
+            data: {
+              state: 3,
+              pid: value[1],
+            }
+          }).then(({
+            data
+          }) => {
+            if (data && data.code == 0) {
+              data.list.forEach(item => {
+                if (item.A) {
+                  let arra = []
+                  arra.push(item.id)
+                  let arr = value.concat(arra)
+
+                  let bool = this.areaIdw.some(item => {
+                    return JSON.stringify(item) == JSON.stringify(arr)
+                  })
+
+                  if (!bool) {
+                    this.areaIdw.push(arr)
+                  }
+                }
+              })
+              this.options.some(items => {
+                if (items.list) {
+                  items.list.some(item => {
+                    if (item.id == value[1] && item.state == 2) {
+                      item.list = data.list
+
+                      return true
+                    }
+                  })
+                }
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        }
+
+      },
+      getCitys () {
+        this.$http({
+          url: this.$http.adornUrl('/ycyl/ycylprovincecity/getCity'),
+          method: 'post',
+          data: {
+            state: 1
+          }
+        }).then(({
+          data
+        }) => {
+          if (data && data.code == 0) {
+            data.list.forEach(item => (item.list = []))
+            this.options = data.list
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      },
+      getSumPrice () {//视频单业绩
+        this.voucherMoney = '统计中...'
+        this.allfreight = '统计中...'
+        this.allMoney = '统计中...'
+
+        if (this.qqTime && this.qqTime.length == 2) {
+          this.searchData.startPayTime = this.qqTime[0] + ' 00:00:00'
+          this.searchData.endPayTime = this.qqTime[1] + ' 23:59:59'
+        }
+        this.searchData.orderProperty = this.dictId
+        if (this.dict.length > 0) {
+          this.searchData.statuss = this.dict
+        } else {
+          delete this.searchData.statuss
+        }
+
+        this.searchData.outboundWay = this.value
+        this.$http({
+          url: this.$http.adornUrl('/ycyl/ycylorder/getPriceBackground'),
+          method: 'post',
+          data: this.searchData
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            document.querySelector('.moneyStyle_1').style.color = 'green'
+            document.querySelector('.moneyStyle_2').style.color = 'green'
+            document.querySelector('.moneyStyle_3').style.color = 'green'
+            if (data.price) {
+              this.allfreight = data.price.freight + '  元'
+              this.allMoney = data.price.sumPrice + '  元'
+              this.voucherMoney = data.price.voucherMoney + '  元'
+            } else {
+              this.allfreight = 0 + '  元'
+              this.allMoney = 0 + '  元'
+              this.voucherMoney = 0 + '  元'
+            }
+          } else {
+            this.$message.error(data.msg)
+          }
+          this.dataListLoading = false
+        })
+      },
+      downloadFile () {//导出信息
+        /*导表添加地区条件开始*/
+        var provinceId = []
+        var cityId = []
+        var areaId = []
+        this.areaId.forEach((e) => {
+          if (e.length == 1) {
+            provinceId.push(e[0])
+          }
+          if (e.length == 2) {
+            provinceId.push(e[0])
+            cityId.push(e[1])
+          }
+          if (e.length == 3) {
+            provinceId.push(e[0])
+            cityId.push(e[1])
+            areaId.push(e[2])
+          }
+        })
+        this.searchData.provinces = provinceId
+        this.searchData.citys = cityId
+        this.searchData.areas = areaId
+        /*导表添加地区条件结束*/
+        const loading = this.$loading({
+          lock: true,
+          text: '下载中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.7)'
+        })
+        if (this.qqTime && this.qqTime.length == 2) {
+          this.searchData.endPayTime = this.qqTime[1] + ' 23:59:59'
+          this.searchData.startPayTime = this.qqTime[0] + ' 00:00:00'
+        }
+        this.searchData.orderProperty = this.dictId
+        if (this.dict.length > 0) {
+          this.searchData.statuss = this.dict
+        } else {
+          delete this.searchData.statuss
+
+        }
+        this.searchData.outboundWay = this.value
+        this.$http({
+          url: this.$http.adornUrl('/ycyl/ycylorder/getOrderRe'),
+          method: 'post',
+          data: this.searchData
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.excelPath = data.path.path
+            window.location.href = this.excelPath
+            this.isdisabled = false
+            loading.close()
+          } else {
+            this.dataList = []
+            this.totalPage = 0
+          }
+        })
+      },
+      changOne (index) {
+      },
+      searchGoods (pageIndex = 1) {
+        //检索功能
+        var areaQuYu
+        var provinceId = []
+        var cityId = []
+        var areaId = []
+        this.areaId.forEach((e) => {
+          if (e.length == 1) {
+            provinceId.push(e[0])
+          }
+          if (e.length == 2) {
+            provinceId.push(e[0])
+            cityId.push(e[1])
+          }
+          if (e.length == 3) {
+            provinceId.push(e[0])
+            cityId.push(e[1])
+            areaId.push(e[2])
+          }
+        })
+        if (this.qqTime && this.qqTime.length == 2) {
+          this.searchData.endPayTime = this.qqTime[1] + ' 23:59:59'
+          this.searchData.startPayTime = this.qqTime[0] + ' 00:00:00'
+        }
+        this.searchData.provinces = provinceId
+        this.searchData.citys = cityId
+        this.searchData.areas = areaId
+        this.searchData.page = pageIndex
+        this.searchData.pageSize = this.pageSize
+        this.searchData.orderProperty = this.dictId
+        if (this.dict.length > 0) {
+          this.searchData.statuss = this.dict
+        } else {
+          delete this.searchData.statuss
+        }
+        this.getSumPrice()//调用统计接口
+        this.searchData.outboundWay = this.value
+        if (this.searchData.mobile && !/1\d{10}/.test(this.searchData.mobile)) {
+          this.$message.error('手机号格式错误')
+          return
+        } else {
+          this.$http({
+            url: this.$http.adornUrl(`/ycyl/ycylorder/${this.searchData.mobile ? 'getForOrderKuai' : 'getForOrderKuai'}`),
+            method: 'post',
+            data: this.searchData
+          }).then(({data}) => {
+            if (data && data.code == 0) {
+              this.dataList = data.page.list
+              this.totalPage = data.page.totalCount
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        }
+      },
+
+      getDataList () {
+        // 获取数据列表
+        this.dataListLoading = true
+        this.$http({
+          url: this.$http.adornUrl('/ycyl/ycylorder/getForOrderKuai'),
+          method: 'post',
+          data: {
+            page: this.pageIndex,
+            pageSize: this.pageSize,
+            key: this.dataForm.key,
+          }
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.dataList = data.page.list
+            this.totalPage = data.page.totalCount
+          } else {
+            this.dataList = []
+            this.totalPage = 0
+          }
+          this.dataListLoading = false
+        })
+      },
+      // 每页数
+      sizeChangeHandle (val) {
+        this.pageSize = val
+        this.pageIndex = 1
+        // this.getDataList();
+        this.searchGoods()
+      },
+      // 当前页
+      currentChangeHandle (val) {
+        this.pageIndex = val
+        // this.getDataList();
+        this.searchGoods(this.pageIndex)
+
+      },
+      // 多选
+      selectionChangeHandle (val) {
+        this.dataListSelections = val
+      },
+      // 详情
+      addOrUpdateHandle (id) {
+        this.addOrUpdateVisible = true
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id)
+        })
+      }
+
+    }
+  }
+</script>
+<style lang="scss" scoped>
+  #doctorSearch {
+    background-color: #eeeeee;
+    border-radius: 0.4rem;
+    padding: 10px 5px;
+    margin-bottom: 16px;
+
+    label {
+      margin-top: 0.5rem;
+      display: inline-block;
+      margin-right: 1rem;
+    }
+
+    .el-input {
+      width: 6rem;
+
+    }
+  }
+
+  .searchBox {
+    background-color: #eee;
+    width: 100%;
+    padding: 8px 0;
+    margin-bottom: 10px;
+
+    label {
+      margin-left: 5px;
+
+      span {
+        color: #ff4d51;
+        font-size: 14px;
+      }
+    }
+
+
+  }
+
+  header {
+    background-color: #fff !important;
+
+    label {
+      font-size: 16px;
+      margin-right: 20px;
+    }
+  }
+</style>
+<style lang="scss">
+  .el-select-dropdown__wrap {
+    max-height: 325px;
+  }
+</style>

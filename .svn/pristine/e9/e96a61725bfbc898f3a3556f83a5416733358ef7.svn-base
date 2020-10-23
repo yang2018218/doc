@@ -1,0 +1,178 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.el-input {
+  width: 144px;
+}
+
+.el-input--medium .el-input__inner {
+  line-height: 30px;
+  height: 30px;
+}
+
+.el-range-editor--medium.el-input__inner {
+  height: 30px;
+}
+
+.el-input__inner {
+  padding-left: 3px;
+}
+
+.el-range-editor.el-input__inner {
+  padding: 0;
+}
+
+.el-date-editor--daterange.el-input, .el-date-editor--daterange.el-input__inner, .el-date-editor--timerange.el-input, .el-date-editor--timerange.el-input__inner {
+  width: 14rem;
+  text-indent: 0.2rem;
+}
+
+.el-form-item {
+  margin-bottom: 10px;
+}
+
+.menulist .el-input__inner {
+  width: 150%;
+}
+
+.el-dialog__body {
+  border-top: 2px solid #999;
+
+}
+
+.el-dialog {
+  border-radius: 10px !important;
+}
+
+.element.style {
+  padding: 10px;
+}
+
+.el-table .cell {
+  padding: 0;
+}
+
+.el-table .cell, .el-table th div, .el-table--border td:first-child .cell, .el-table--border th:first-child .cell {
+  padding-left: 0px;
+}
+
+#agencypages #edui1 {
+  z-index: 0 !important;
+}
+
+.diqu .el-input__inner {
+  height: 32px !important;
+}
+
+#addMianfei .span1 .el-input {
+  width: 95px;
+}
+
+#addMianfei .span2 .el-input {
+  width: 120px;
+}
+
+/*#addMianfei .content .courseImgBox .sectionLeft .el-upload--picture-card{*/
+/*  width: 185px;*/
+/*  height: 133px;*/
+/*}*/
+/*#addMianfei .content .courseImgBox .sectionRight .el-upload--picture-card{*/
+/*  width: 185px;*/
+/*  height: 133px;*/
+/*}*/
+/*#addMianfei #edui1{*/
+/*  z-index: 999 !important;*/
+/*}*/
+#bianjizhangjie .el-dialog__body {
+  padding: 10px 30px !important;
+}
+
+/*#addDrugTan .el-select-dropdown ,.el-popper{*/
+/*  z-index: 3 !important;*/
+/*}*/
+#player-con_component_D67A4EDA-5A63-41AD-A191-9863D2743068, .prism-big-play-btn {
+  left: 118px !important;
+}
+
+#pushMoneyID .el-form-item__label {
+  font-size: 16px;
+}
+
+.searchStyle {
+  padding: 8px 20px;
+}
+
+.select .first .selectBox .el-input {
+  width: 250px;
+}
+
+#lingquan .el-checkbox-button__inner {
+  padding: 8px 20px !important;
+}
+
+.core .el-dialog {
+  margin-top: 35vh;
+}
+
+.popup_time .el-input__inner {
+  height: 34px;
+
+}
+
+.btnClassSty {
+  padding: 8px 20px;
+}
+
+.popContent .el-dialog__title {
+  font-size: 24px !important;
+}
+
+.popContent el-dialog .el-dialog__title {
+  font-size: 24px !important;
+
+}
+
+.el-dialog__body {
+   padding: 10px 20px;
+}
+.addTicket .el-dialog__title{
+  font-size: 24px ;
+}
+#statusIdWidth .el-input{
+  width: 300px;
+}
+#user_area .el-cascader-menu{
+  /*
+  检索省市区的高
+  */
+  height: 500px !important;
+}
+#user_area .el-input{
+  width: 500px;
+
+}
+#user_area.el-cascader__tags{
+  width: 500px;
+}
+#user_area .el-input__inner{
+width: 500px;
+}
+#user_area .el-cascader__tags{
+width: 500px;
+}
+#shArea .el-input{
+  width: 400px;
+}
+#shArea.el-cascader__tags{
+  width: 400px;
+}
+#shArea .el-input__inner{
+  width: 400px;
+}
+#shArea .el-cascader__tags{
+  width: 400px;
+}
+

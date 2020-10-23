@@ -1,0 +1,28 @@
+.server_cascader,
+.ageng_xx {
+    top: -6px!important;
+    .el-cascader-node {
+        height: 28px;
+    }
+    .el-cascader-menu {
+        height: 1200px!important;
+    }
+    .el-scrollbar__wrap {
+        height: 100%;
+    }
+    .el-cascader-menu__list {
+        width: 160px;
+    }
+    .el-scrollbar__wrap {
+        margin-right: 0px;
+    }
+    .el-tag {
+        span {
+            display: none;
+        }
+    }
+    .el-cascader__tags {
+        width: 1px;
+        display: none;
+    }
+}
